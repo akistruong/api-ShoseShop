@@ -4,6 +4,7 @@ class CategoryController {
   async index(req, res, next) {
     try {
       const { search } = req.query;
+
       console.log(search);
       const cat = await Products.find(
         search ? { category: { $regex: ".*" + search + ".*" } } : {},
