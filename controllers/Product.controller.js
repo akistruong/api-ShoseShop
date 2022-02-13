@@ -4,11 +4,18 @@ const ApiFeature = require("../commom/ApiFeatures");
 class ProductController {
   async index(req, res, next) {
     try {
-      const { search } = req.query;
-      const response = await Products.find(
-        search ? { name: { $regex: ".*" + search + ".*" } } : {}
-      );
-      console.log(response);
+      let response = [];
+      const { search, collections } = req.query;
+      if (search) {
+        response = await Products.find(
+          search ? { name: { $regex: ".*" + search + ".*" } } : {}
+        );
+      } else if (collections) {
+        response = await Products.find({ collections });
+      } else {
+        response = await Products.find();
+      }
+
       if (response) {
         const features = new ApiFeature(response, req.query).pagging().sort();
 

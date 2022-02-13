@@ -7,7 +7,7 @@ class ApiFeature {
   }
   pagging() {
     const page = this.actions.page * 1 || 1;
-    const limit = this.actions.limit * 1 || 20;
+    const limit = this.actions.limit * 1 || 5;
     const start = (page - 1) * limit;
     console.log(start);
     const end = start + limit;
@@ -22,9 +22,9 @@ class ApiFeature {
     if (time) {
       this.input = this.input.sort((a, b) => {
         if (time == "-1") {
-          return new Date(b.createdAt) - Date(a.createdAt);
+          return b.createdAt - a.createdAt;
         } else {
-          return new Date(a.createdAt) - Date(b.createdAt);
+          return a.createdAt - b.createdAt;
         }
       });
     } else if (price) {
