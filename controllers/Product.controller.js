@@ -5,12 +5,18 @@ const mongoose = require("mongoose");
 class ProductController {
   async index(req, res, next) {
     try {
+<<<<<<< HEAD
       let response = [];
       const { search, collections, qnew } = req.query;
+=======
+      const { search, qNewest } = req.query;
+      let response = [];
+>>>>>>> Product
       if (search) {
         response = await Products.find(
           search ? { name: { $regex: ".*" + search + ".*" } } : {}
         );
+<<<<<<< HEAD
       } else if (qnew) {
         response = await Products.find({}).sort({ createdAt: -1 }).limit(4);
       } else if (collections) {
@@ -22,7 +28,14 @@ class ProductController {
           const features = new ApiFeature(response, req.query).pagging().sort();
           res.json({ products: features.input });
         }
+=======
+      } else if (qNewest) {
+        response = await Products.find().sort({ createdAt: -1 }).limit(2);
+      } else {
+        response = await Products.find();
+>>>>>>> Product
       }
+      res.json({ products: response });
     } catch (error) {
       res.status(500).json({ success: false, msg: error.message });
     }
