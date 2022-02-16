@@ -6,8 +6,12 @@ router.get("/products", ProductController.index);
 router.get("/products/:id", ProductController.getSingleProduct);
 //Method:Post - create a product
 router.post("/create-product", ProductController.create);
+<<<<<<< HEAD
 //Method:patch - update a product
 router.patch("/update-product", ProductController.update);
 //Method:delete - delete a product
+=======
+router.patch("/update-product/:id", ProductController.update);
+>>>>>>> Product
 router.delete("/delete-product", ProductController.delete);
 module.exports = router;
