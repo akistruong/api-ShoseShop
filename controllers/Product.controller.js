@@ -52,7 +52,30 @@ class ProductController {
     }
   }
   async update(req, res, next) {
-    res.json("Update PRODUCT");
+    const { id } = req.params;
+    const { name, price, category, colors, sizes, dsc, stars } = req.body;
+    try {
+      const response = await Products.updateOne(
+        { _id: id },
+        {
+          $set: {
+            name,
+            price,
+            category,
+            colors,
+            sizes,
+            dsc,
+            stars,
+          },
+        }
+      );
+      if (response) {
+        res.json({ success: true, msg: "Update success!" });
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ success: false, msg: "Update failure!" });
+    }
   }
   async delete(req, res, next) {
     const { id } = req.body;
