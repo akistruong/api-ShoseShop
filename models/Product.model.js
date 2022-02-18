@@ -12,7 +12,11 @@ const ProductSchema = new Schema(
     dsc: String,
     stars: Array,
     sex: String,
+<<<<<<< HEAD
     collections: { type: Schema.Types.ObjectId, ref: "Collections" },
+=======
+    imgs: String,
+>>>>>>> Product
   },
   {
     timestamps: true,
