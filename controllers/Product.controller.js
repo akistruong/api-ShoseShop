@@ -1,26 +1,22 @@
 const Products = require("../models/Product.model");
+const Collections = require("../models/Collection.model");
 const ApiFeature = require("../commom/ApiFeatures");
-
+const mongoose = require("mongoose");
 class ProductController {
   async index(req, res, next) {
     try {
+      const { search, qNewest } = req.query;
       let response = [];
-      const { search, collections } = req.query;
       if (search) {
         response = await Products.find(
           search ? { name: { $regex: ".*" + search + ".*" } } : {}
         );
-      } else if (collections) {
-        response = await Products.find({ collections });
+      } else if (qNewest) {
+        response = await Products.find().sort({ createdAt: -1 }).limit(2);
       } else {
         response = await Products.find();
       }
-
-      if (response) {
-        const features = new ApiFeature(response, req.query).pagging().sort();
-
-        res.json({ products: features.input });
-      }
+      res.json({ products: response });
     } catch (error) {
       res.status(500).json({ success: false, msg: error.message });
     }
@@ -37,7 +33,17 @@ class ProductController {
     }
   }
   async create(req, res, next) {
-    const { name, price, category, colors, sizes, dsc, stars } = req.body;
+    const {
+      name,
+      price,
+      category,
+      colors,
+      sizes,
+      dsc,
+      stars,
+      collectionName,
+      collectionDsc,
+    } = req.body;
     try {
       const newProduct = new Products({
         name,
@@ -47,17 +53,48 @@ class ProductController {
         sizes,
         dsc,
         stars,
+        collectionName,
+        collectionDsc,
       });
-      const response = await newProduct.save();
-      if (response) {
-        res.json({ success: true });
-      }
+      const newCollection = new Collections({
+        _id: new mongoose.Types.ObjectId(),
+        name: collectionName,
+        dsc: collectionDsc,
+      });
+      newCollection.save((err) => {
+        if (err) return res.json({ success: false, msg: err.message });
+        newProduct.save();
+      });
+      return res.json({ success: true });
     } catch (error) {
-      res.status(500).json({ success: false, msg: error });
+      return res.status(500).json({ success: false, msg: error.message });
     }
   }
   async update(req, res, next) {
-    res.json("Update PRODUCT");
+    const { id } = req.params;
+    const { name, price, category, colors, sizes, dsc, stars } = req.body;
+    try {
+      const response = await Products.updateOne(
+        { _id: id },
+        {
+          $set: {
+            name,
+            price,
+            category,
+            colors,
+            sizes,
+            dsc,
+            stars,
+          },
+        }
+      );
+      if (response) {
+        res.json({ success: true, msg: "Update success!" });
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ success: false, msg: "Update failure!" });
+    }
   }
   async delete(req, res, next) {
     const { id } = req.body;
