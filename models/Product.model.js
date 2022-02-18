@@ -12,6 +12,7 @@ const ProductSchema = new Schema(
     dsc: String,
     stars: Array,
     sex: String,
+    imgs: String,
   },
   {
     timestamps: true,
