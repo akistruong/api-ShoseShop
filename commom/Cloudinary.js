@@ -6,4 +6,23 @@ Cloudinary.v2.config({
   api_secret: process.env.CLOUD_CLOUDINARY_APISECRET,
 });
 
-module.exports = Cloudinary;
+const cloudinaryImageUploadMethod = async (file) => {
+  return new Promise((resolve, reject) => {
+    Cloudinary.v2.uploader.upload(
+      file,
+      { folder: "Shoes/product" },
+      (err, res) => {
+        if (err) {
+          return reject(err);
+        } else {
+          return resolve({
+            public_id: res.public_id,
+            url: res.secure_url,
+          });
+        }
+      }
+    );
+  });
+};
+
+module.exports = { Cloudinary, cloudinaryImageUploadMethod };
