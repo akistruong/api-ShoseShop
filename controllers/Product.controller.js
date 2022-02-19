@@ -1,22 +1,40 @@
 const Products = require("../models/Product.model");
 const Collections = require("../models/Collection.model");
 const ApiFeature = require("../commom/ApiFeatures");
+require("../models/Collection.model");
 const mongoose = require("mongoose");
 class ProductController {
   async index(req, res, next) {
     try {
-      const { search, qNewest } = req.query;
+      const { search, qNewest, collection, qNewestCollection, sex } = req.query;
       let response = [];
       if (search) {
         response = await Products.find(
           search ? { name: { $regex: ".*" + search + ".*" } } : {}
-        );
+        ).populate("collections");
       } else if (qNewest) {
-        response = await Products.find().sort({ createdAt: -1 }).limit(2);
+        response = await Products.find()
+          .sort({ createdAt: -1 })
+          .limit(2)
+          .populate("collections");
+      } else if (collection) {
+        response = await Products.find().populate({
+          path: "collections",
+          match: { name: collection },
+        });
+        response = response.filter((item) => item.collections != null);
+      } else if (qNewestCollection) {
+        response = await Products.find()
+          .populate("collections")
+          .sort({ createdAt: -1 })
+          .limit(2);
+      } else if (sex) {
+        response = await Products.find({ sex }).populate("collections");
       } else {
-        response = await Products.find();
+        response = await Products.find().populate("collections");
       }
-      res.json({ products: response });
+      const feature = new ApiFeature(response, req.query).pagging().sort();
+      res.json({ products: feature.input });
     } catch (error) {
       res.status(500).json({ success: false, msg: error.message });
     }
@@ -24,7 +42,9 @@ class ProductController {
   async getSingleProduct(req, res, next) {
     try {
       const { id } = req.params;
-      const response = await Products.findOne({ _id: id });
+      const response = await Products.findOne({ _id: id }).populate(
+        "collections"
+      );
       if (response) {
         res.json({ success: true, product: response });
       }
@@ -43,8 +63,15 @@ class ProductController {
       stars,
       collectionName,
       collectionDsc,
+      sex,
+      imgs,
     } = req.body;
     try {
+      const newCollection = new Collections({
+        _id: new mongoose.Types.ObjectId(),
+        name: collectionName,
+        dsc: collectionDsc,
+      });
       const newProduct = new Products({
         name,
         price,
@@ -53,14 +80,10 @@ class ProductController {
         sizes,
         dsc,
         stars,
-        collectionName,
-        collectionDsc,
+        sex,
+        collections: newCollection._id,
       });
-      const newCollection = new Collections({
-        _id: new mongoose.Types.ObjectId(),
-        name: collectionName,
-        dsc: collectionDsc,
-      });
+
       newCollection.save((err) => {
         if (err) return res.json({ success: false, msg: err.message });
         newProduct.save();
