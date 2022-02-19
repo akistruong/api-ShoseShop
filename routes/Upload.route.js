@@ -1,30 +1,16 @@
 const router = require("express").Router();
 const Multer = require("../commom/Multer");
-const {
-  Cloudinary,
-  cloudinaryImageUploadMethod,
-} = require("../commom/Cloudinary");
-const fs = require("fs");
+const UploadController = require("../controllers/Upload.controller");
 
 router.post(
   "/upload/product-imgs",
   Multer.array("imgs", 5),
-
-  async (req, res, next) => {
-    const FileArray = [];
-    for (let i = 0; i < req.files.length; i++) {
-      try {
-        const responseUpload = await cloudinaryImageUploadMethod(
-          req.files[i].path
-        );
-        FileArray.push(responseUpload);
-        const filePath = req.files[i].path;
-        fs.unlinkSync(filePath);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    res.json({ Files: FileArray });
-  }
+  UploadController.productImgs
 );
+router.post(
+  "/upload/product-imgs-colors",
+  Multer.array("colors", 5),
+  UploadController.colorImgs
+);
+
 module.exports = router;
