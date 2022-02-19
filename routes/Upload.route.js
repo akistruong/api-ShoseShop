@@ -14,21 +14,17 @@ router.post(
     const FileArray = [];
     for (let i = 0; i < req.files.length; i++) {
       try {
-        console.log("Vào Try");
         const responseUpload = await cloudinaryImageUploadMethod(
           req.files[i].path
         );
         FileArray.push(responseUpload);
         const filePath = req.files[i].path;
-        console.log(filePath);
         fs.unlinkSync(filePath);
       } catch (error) {
-        console.log("Vào Catch");
         console.log(error);
       }
     }
     res.json({ Files: FileArray });
   }
 );
-
 module.exports = router;
