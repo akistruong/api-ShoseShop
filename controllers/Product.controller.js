@@ -32,8 +32,9 @@ class ProductController {
         response = await Products.find({ sex }).populate("collections");
       } else {
         response = await Products.find().populate("collections");
+        console.log(response);
       }
-      const feature = new ApiFeature(response, req.query).pagging().sort();
+      const feature = new ApiFeature(response, req.query).sort().pagging();
       res.json({ products: feature.input });
     } catch (error) {
       res.status(500).json({ success: false, msg: error.message });

@@ -7,7 +7,7 @@ class ApiFeature {
   }
   pagging() {
     const page = this.actions.page * 1 || 1;
-    const limit = this.actions.limit * 1 || 2;
+    const limit = this.actions.limit * 1 || 10;
     const start = (page - 1) * limit;
     const end = start + limit;
     this.input = this.input.slice(start, end);
