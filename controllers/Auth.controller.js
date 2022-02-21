@@ -19,13 +19,13 @@ class AuthController {
     }
   }
   async register(req, res, next) {
-    const { email, passsword, address, firstName, lastName, sex } = req.body;
+    const { email, password, address, firstName, lastName, sex } = req.body;
     try {
       const user = await Users.findOne({ email });
-      if (user) {
+      if (!user) {
         const newUser = new Users({
           email,
-          passsword,
+          password,
           address,
           firstName,
           lastName,
@@ -33,7 +33,11 @@ class AuthController {
         });
         const response = await newUser.save();
         if (response) {
-          res.json({ success: true, msg: "Tạo tài khoản thành công" });
+          res.json({
+            success: true,
+            msg: "Tạo tài khoản thành công",
+            body: response,
+          });
         }
       } else {
         res.json({ success: false, msg: "Email đã tồn tại..." });
