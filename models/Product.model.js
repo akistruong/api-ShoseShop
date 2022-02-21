@@ -12,6 +12,11 @@ const ProductSchema = new Schema(
     dsc: String,
     stars: Array,
     sex: String,
+    imgs: Array,
+    collections: {
+      type: mongoose.Types.ObjectId,
+      ref: "Collections",
+    },
   },
   {
     timestamps: true,

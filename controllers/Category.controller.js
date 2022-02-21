@@ -4,7 +4,6 @@ class CategoryController {
   async index(req, res, next) {
     try {
       const { search } = req.query;
-      console.log(search);
       const cat = await Products.find(
         search ? { category: { $regex: ".*" + search + ".*" } } : {},
         {
@@ -16,19 +15,20 @@ class CategoryController {
         return res.json({ success: true, categorys: features.input });
       }
     } catch (error) {
-      console.log(error);
+      res.status(500).json({ error: error.message });
     }
   }
   async getProductByCategory(req, res, next) {
     try {
       const { id } = req.params;
-      const cat = await Products.find({ category: id });
+      console.log(id);
+      const cat = await Products.find({ category: id }).populate("collections");
       if (cat) {
         const features = new ApiFeatures(cat, req.query).sort().pagging();
-        return res.json({ success: true, categorys: features.input });
+        return res.json({ success: true, products: features.input });
       }
     } catch (error) {
-      console.log(error);
+      res.status(500).json({ error: error.message });
     }
   }
 }
