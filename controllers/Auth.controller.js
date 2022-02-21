@@ -1,13 +1,23 @@
-//MODEL
 const Users = require("../models/User.model");
-
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
+require("dotenv").config();
 class AuthController {
   async login(req, res, next) {
     const { email, password } = req.body;
     try {
       const user = await Users.findOne({ email });
-      if (user && user.password == password) {
-        res.json({ success: true, msg: "Đăng nhập thành công." });
+      if (user) {
+        bcrypt.compare(password, user.password, function (err, result) {
+          if (result) {
+            res.json({ success: true, msg: "Đăng nhập thành công." });
+          } else {
+            res.json({
+              success: true,
+              msg: "Mật khẩu không chính xác.",
+            });
+          }
+        });
       } else {
         res.json({
           success: true,
@@ -22,10 +32,14 @@ class AuthController {
     const { email, password, address, firstName, lastName, sex } = req.body;
     try {
       const user = await Users.findOne({ email });
+
       if (!user) {
+        //Hash Password
+        const salt = bcrypt.genSaltSync(saltRounds);
+        const hash = bcrypt.hashSync(password, salt);
         const newUser = new Users({
           email,
-          password,
+          password: hash,
           address,
           firstName,
           lastName,
