@@ -1,17 +1,24 @@
 const JWT = require("../commom/jwtHelper");
+const Users = require("../models/User.model");
+
 require("dotenv").config();
-const isAdmin = (req, res, next) => {
+const isAdmin = async (req, res, next) => {
   const Token = req.headers.authorization;
-  if (Token) {
-    const decode = JWT.compareToken(
-      Token,
-      process.env.JWT_ACCESS_TOKEN_SECRET_KEY
-    );
-    if (decode) {
-      next();
+  console.log({ USERS: req.user });
+  const email = req.user.email;
+  if (email) {
+    try {
+      const response = await Users.findOne({ email });
+      if (response.role == "1") {
+        next();
+      } else {
+        res.status(401).json("Không đủ quyền truy cập");
+      }
+    } catch (error) {
+      console.log(error);
     }
   } else {
-    res.json("LOGIN THAT BAI");
+    res.status(403).json("Chưa đăng nhập..");
   }
 };
 

@@ -14,7 +14,7 @@ class AuthController {
         bcrypt.compare(password, user.password, function (err, result) {
           if (result) {
             const Token = JWT.accessToken(
-              user,
+              { email: user.email },
               process.env.JWT_ACCESS_TOKEN_SECRET_KEY
             );
             res.json({ success: true, msg: "Đăng nhập thành công.", Token });
@@ -54,7 +54,7 @@ class AuthController {
         const response = await newUser.save();
         if (response) {
           const Token = JWT.accessToken(
-            user,
+            { email },
             process.env.JWT_ACCESS_TOKEN_SECRET_KEY
           );
           res.json({
