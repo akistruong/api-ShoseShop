@@ -1,7 +1,10 @@
 const Users = require("../models/User.model");
 const bcrypt = require("bcrypt");
-const saltRounds = 10;
+const jwt = require("jsonwebtoken");
+const JWT = require("../commom/jwtHelper");
 require("dotenv").config();
+const saltRounds = 10;
+const passport = require("../commom/FacebookApi");
 class AuthController {
   async login(req, res, next) {
     const { email, password } = req.body;
@@ -10,10 +13,14 @@ class AuthController {
       if (user) {
         bcrypt.compare(password, user.password, function (err, result) {
           if (result) {
-            res.json({ success: true, msg: "Đăng nhập thành công." });
+            const Token = JWT.accessToken(
+              user,
+              process.env.JWT_ACCESS_TOKEN_SECRET_KEY
+            );
+            res.json({ success: true, msg: "Đăng nhập thành công.", Token });
           } else {
             res.json({
-              success: true,
+              success: false,
               msg: "Mật khẩu không chính xác.",
             });
           }
@@ -32,7 +39,6 @@ class AuthController {
     const { email, password, address, firstName, lastName, sex } = req.body;
     try {
       const user = await Users.findOne({ email });
-
       if (!user) {
         //Hash Password
         const salt = bcrypt.genSaltSync(saltRounds);
@@ -47,10 +53,15 @@ class AuthController {
         });
         const response = await newUser.save();
         if (response) {
+          const Token = JWT.accessToken(
+            user,
+            process.env.JWT_ACCESS_TOKEN_SECRET_KEY
+          );
           res.json({
             success: true,
             msg: "Tạo tài khoản thành công",
             body: response,
+            Token,
           });
         }
       } else {
@@ -60,7 +71,10 @@ class AuthController {
       res.status(500).json({ success: false, msg: "server error" });
     }
   }
-  async facebook(req, res, next) {}
+  async facebook(req, res, next) {
+    // res.json({ data: req.profile });
+  }
+  async refreshToken(req, res, next) {}
 }
 
 module.exports = new AuthController();
