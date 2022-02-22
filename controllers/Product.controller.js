@@ -4,6 +4,7 @@ const ApiFeature = require("../commom/ApiFeatures");
 require("../models/Collection.model");
 const mongoose = require("mongoose");
 class ProductController {
+  //GET - get all products
   async index(req, res, next) {
     try {
       const { search, qNewest, collection, qNewestCollection, sex } = req.query;
@@ -40,6 +41,7 @@ class ProductController {
       res.status(500).json({ success: false, msg: error.message });
     }
   }
+  //GET - get single product
   async getSingleProduct(req, res, next) {
     try {
       const { id } = req.params;
@@ -53,6 +55,7 @@ class ProductController {
       res.status(500).json({ success: false, msg: error.message });
     }
   }
+  //POST - create new product
   async create(req, res, next) {
     const {
       name,
@@ -94,6 +97,7 @@ class ProductController {
       return res.status(500).json({ success: false, msg: error.message });
     }
   }
+  //PATCH - PATCH product
   async update(req, res, next) {
     const { id } = req.params;
     const { name, price, category, colors, sizes, dsc, stars } = req.body;
@@ -120,6 +124,7 @@ class ProductController {
       res.status(500).json({ success: false, msg: "Update failure!" });
     }
   }
+  //DELETE - delete product
   async delete(req, res, next) {
     const { id } = req.body;
     try {
