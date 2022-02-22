@@ -85,6 +85,7 @@ class ProductController {
         dsc,
         stars,
         sex,
+        imgs,
         collections: newCollection._id,
       });
 
