@@ -5,11 +5,11 @@ const MessageSchema = new Schema(
   {
     msg: String,
     productId: {
-      type: mongoose.Types.ObjectId(),
+      type: mongoose.Types.ObjectId,
       ref: "Products",
     },
     userId: {
-      type: mongoose.Types.ObjectId(),
+      type: mongoose.Types.ObjectId,
       ref: "User",
     },
     reply: [],
