@@ -7,7 +7,15 @@ class ProductController {
   //GET - get all products
   async index(req, res, next) {
     try {
-      const { search, qNewest, collection, qNewestCollection, sex } = req.query;
+      const {
+        search,
+        qNewest,
+        collection,
+        qNewestCollection,
+        sex,
+        size,
+        color,
+      } = req.query;
       let response = [];
       if (search) {
         response = await Products.find(
@@ -33,7 +41,6 @@ class ProductController {
         response = await Products.find({ sex }).populate("collections");
       } else {
         response = await Products.find().populate("collections");
-        console.log(response);
       }
       const feature = new ApiFeature(response, req.query).sort().pagging();
       res.json({ products: feature.input });
