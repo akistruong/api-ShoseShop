@@ -9,6 +9,10 @@ const UserSchema = new Schema({
   address: Object,
   avatar: String,
   sex: Boolean,
+  role: {
+    type: String,
+    default: "0",
+  },
   createdWithMethod: {
     type: String,
     default: "local",
