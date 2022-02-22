@@ -9,6 +9,10 @@ const UserSchema = new Schema({
   address: Object,
   avatar: String,
   sex: Boolean,
+  createdWithMethod: {
+    type: String,
+    default: "local",
+  },
 });
 UserSchema.methods.comparePassword = function (candidatePassword, cb) {
   bcrypt.compare(candidatePassword, this.password, function (err, isMatch) {
