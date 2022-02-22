@@ -13,7 +13,7 @@ class ProductController {
         collection,
         qNewestCollection,
         sex,
-        size,
+        sizes,
         color,
       } = req.query;
       let response = [];
@@ -37,6 +37,11 @@ class ProductController {
           .populate("collections")
           .sort({ createdAt: -1 })
           .limit(2);
+      } else if (sizes) {
+        console.log(sizes);
+        response = await Products.find({ sizes: { $in: sizes } }).populate(
+          "collections"
+        );
       } else if (sex) {
         response = await Products.find({ sex }).populate("collections");
       } else {
