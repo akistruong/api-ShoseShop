@@ -11,16 +11,22 @@ class ProductController {
     try {
       let products = await Products.find().populate("collections");
       if (sex) {
-        products = products.filter((product) => {
+        products = products.filter((product, index) => {
           for (let i = 0; i < sex.length; i++) {
-            return product.sex == sex[i];
+            if (product.sex == sex[i]) {
+              return true;
+            }
           }
         });
       }
       if (sizes) {
-        products = products.filter((product) => {
+        products = products.filter((product, index) => {
           for (let i = 0; i < sizes.length; i++) {
-            return product.sizes[i] == sizes[i];
+            for (let j = 0; j < product.sizes.length; j++) {
+              if (product.sizes[j] == sizes[i]) {
+                return true;
+              }
+            }
           }
         });
       }
@@ -32,7 +38,11 @@ class ProductController {
       if (colours) {
         products = products.filter((product) => {
           for (let i = 0; i < colours.length; i++) {
-            return product.colors[i] == colours[i];
+            for (let j = 0; j < product.colors.length; j++) {
+              if (product.colors[j] == colours[i]) {
+                return true;
+              }
+            }
           }
         });
       }
