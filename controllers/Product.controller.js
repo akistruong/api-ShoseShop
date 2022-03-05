@@ -1,55 +1,52 @@
 const Products = require("../models/Product.model");
 const Collections = require("../models/Collection.model");
-const ApiFeature = require("../commom/ApiFeatures");
 require("../models/Collection.model");
 const mongoose = require("mongoose");
+const ApiFeature = require("../commom/ApiFeatures");
 class ProductController {
   //GET - get all products
   async index(req, res, next) {
+    const { sex, sizes, search, colours, brands } = req.query;
+    console.log(req.query);
     try {
-      const {
-        search,
-        qNewest,
-        collection,
-        qNewestCollection,
-        sex,
-        sizes,
-        color,
-      } = req.query;
-      let response = [];
-      if (search) {
-        response = await Products.find(
-          search ? { name: { $regex: ".*" + search + ".*" } } : {}
-        ).populate("collections");
-      } else if (qNewest) {
-        response = await Products.find()
-          .sort({ createdAt: -1 })
-          .limit(2)
-          .populate("collections");
-      } else if (collection) {
-        response = await Products.find().populate({
-          path: "collections",
-          match: { name: collection },
+      let products = await Products.find().populate("collections");
+      if (sex) {
+        products = products.filter((product) => {
+          for (let i = 0; i < sex.length; i++) {
+            return product.sex == sex[i];
+          }
         });
-        response = response.filter((item) => item.collections != null);
-      } else if (qNewestCollection) {
-        response = await Products.find()
-          .populate("collections")
-          .sort({ createdAt: -1 })
-          .limit(2);
-      } else if (sizes) {
-        console.log(sizes);
-        response = await Products.find({ sizes: { $in: sizes } }).populate(
-          "collections"
-        );
-      } else if (sex) {
-        response = await Products.find({ sex }).populate("collections");
-      } else {
-        response = await Products.find().populate("collections");
       }
-      const feature = new ApiFeature(response, req.query).sort().pagging();
-      res.json({ products: feature.input });
+      if (sizes) {
+        products = products.filter((product) => {
+          for (let i = 0; i < sizes.length; i++) {
+            return product.sizes[i] == sizes[i];
+          }
+        });
+      }
+      if (search) {
+        products = products.filter((product) => {
+          return product.name == search;
+        });
+      }
+      if (colours) {
+        products = products.filter((product) => {
+          for (let i = 0; i < colours.length; i++) {
+            return product.colors[i] == colours[i];
+          }
+        });
+      }
+      if (brands) {
+        products = products.filter((product) => {
+          for (let i = 0; i < brands.length; i++) {
+            return product.category == brands[i];
+          }
+        });
+      }
+      let response = new ApiFeature(products, req.query).sort().pagging();
+      res.json({ products: response.input });
     } catch (error) {
+      console.log(error);
       res.status(500).json({ success: false, msg: error.message });
     }
   }

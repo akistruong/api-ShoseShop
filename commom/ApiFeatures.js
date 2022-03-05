@@ -7,7 +7,7 @@ class ApiFeature {
   }
   pagging() {
     const page = this.actions.page * 1 || 1;
-    const limit = this.actions.limit * 1 || 10;
+    const limit = this.actions.limit * 1 || 5;
     const start = (page - 1) * limit;
     const end = start + limit;
     this.input = this.input.slice(start, end);
@@ -16,7 +16,6 @@ class ApiFeature {
   sort() {
     const time = this.actions?.sortByDate;
     const price = this.actions?.sortByPrice;
-    console.log(time + price);
     if (time) {
       this.input = this.input.sort((a, b) => {
         if (time == "-1") {
