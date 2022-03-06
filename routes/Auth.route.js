@@ -4,6 +4,7 @@ const AuthController = require("../controllers/Auth.controller");
 
 router.post("/login", AuthController.login);
 router.post("/register", AuthController.register);
+router.post("/admin", AuthController.AdminLogin);
 router.get(
   "/login-with-facebook",
   passport.authenticate("facebook", { scope: ["email", "public_profile"] }),

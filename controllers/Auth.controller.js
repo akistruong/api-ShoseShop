@@ -71,6 +71,42 @@ class AuthController {
       res.status(500).json({ success: false, msg: "server error" });
     }
   }
+  async AdminLogin(req, res, next) {
+    const { email, password } = req.body;
+    try {
+      const user = await Users.findOne({ email });
+      if (user) {
+        if (user.role == "1") {
+          bcrypt.compare(password, user.password, function (err, result) {
+            if (result) {
+              const Token = JWT.accessToken(
+                { email: user.email },
+                process.env.JWT_ACCESS_TOKEN_SECRET_KEY
+              );
+              res.json({ success: true, msg: "Đăng nhập thành công.", Token });
+            } else {
+              res.json({
+                success: false,
+                msg: "Mật khẩu không chính xác.",
+              });
+            }
+          });
+        } else {
+          res.json({
+            success: false,
+            msg: "Tài khoản hoặc mật khẩu không chính xác.",
+          });
+        }
+      } else {
+        res.json({
+          success: false,
+          msg: "Tài khoản hoặc mật khẩu không chính xác.",
+        });
+      }
+    } catch (error) {
+      res.status(500).json({ success: false, msg: "server error" });
+    }
+  }
   async facebook(req, res, next) {
     // res.json({ data: req.profile });
   }

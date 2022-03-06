@@ -7,7 +7,7 @@ const routes = (app) => {
   app.use("/api", ProductRoute);
   app.use("/api", CategoryRoute);
   app.use("/api", UploadRoute);
-  app.use("/api", AuthRoute);
+  app.use("/api/auth", AuthRoute);
   app.use("/api", UserRoute);
 };
 

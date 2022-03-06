@@ -49,7 +49,7 @@ class ProductController {
       if (brands) {
         products = products.filter((product) => {
           for (let i = 0; i < brands.length; i++) {
-            return product.category == brands[i];
+            if (product.category == brands[i]) return true;
           }
         });
       }
