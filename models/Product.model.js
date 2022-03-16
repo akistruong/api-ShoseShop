@@ -10,7 +10,10 @@ const ProductSchema = new Schema(
     sizes: Array,
     colors: Array,
     dsc: String,
-    stars: Array,
+    stars: {
+      type: [],
+      default: [],
+    },
     sex: String,
     imgs: Array,
     collections: {

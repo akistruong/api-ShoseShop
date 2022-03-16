@@ -18,6 +18,9 @@ const cloudinaryImageUploadMethod = async (file) => {
           return resolve({
             public_id: res.public_id,
             url: res.secure_url,
+            name: res.original_filename,
+            status: "done",
+            isLoading: false,
           });
         }
       }

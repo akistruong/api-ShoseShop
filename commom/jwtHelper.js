@@ -13,14 +13,16 @@ class JWT {
     return token;
   }
   compareToken(yourToken, privateKey) {
-    let data;
-    jwt.verify(yourToken, privateKey, function (err, decoded) {
-      if (err) throw err;
-      if (decoded) {
-        data = decoded;
-      }
+    return new Promise((resolve, reject) => {
+      jwt.verify(yourToken, privateKey, function (err, decoded) {
+        if (err) {
+          reject(err);
+        }
+        if (decoded) {
+          resolve(decoded);
+        }
+      });
     });
-    return data;
   }
 }
 

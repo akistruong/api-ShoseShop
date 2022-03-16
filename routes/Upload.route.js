@@ -12,5 +12,6 @@ router.post(
   Multer.array("colors", 5),
   UploadController.colorImgs
 );
+router.post("/destroy-img", UploadController.destroy);
 
 module.exports = router;

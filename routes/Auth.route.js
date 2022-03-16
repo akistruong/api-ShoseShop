@@ -2,6 +2,7 @@ const router = require("express").Router();
 const passport = require("../commom/FacebookApi");
 const AuthController = require("../controllers/Auth.controller");
 
+router.post("/", AuthController.Auth);
 router.post("/login", AuthController.login);
 router.post("/register", AuthController.register);
 router.post("/admin", AuthController.AdminLogin);

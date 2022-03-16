@@ -7,9 +7,10 @@ class ProductController {
   //GET - get all products
   async index(req, res, next) {
     const { sex, sizes, search, colours, brands } = req.query;
-    console.log(req.query);
+    let lengthOfProducts = 0;
     try {
       let products = await Products.find().populate("collections");
+      lengthOfProducts = products.length;
       if (sex) {
         products = products.filter((product, index) => {
           for (let i = 0; i < sex.length; i++) {
@@ -54,7 +55,7 @@ class ProductController {
         });
       }
       let response = new ApiFeature(products, req.query).sort().pagging();
-      res.json({ products: response.input });
+      res.json({ products: response.input, length: lengthOfProducts });
     } catch (error) {
       console.log(error);
       res.status(500).json({ success: false, msg: error.message });
@@ -84,16 +85,15 @@ class ProductController {
       sizes,
       dsc,
       stars,
-      collectionName,
-      collectionDsc,
+      collections,
       sex,
       imgs,
     } = req.body;
     try {
       const newCollection = new Collections({
         _id: new mongoose.Types.ObjectId(),
-        name: collectionName,
-        dsc: collectionDsc,
+        name: collections.name,
+        dsc: collections.dsc,
       });
       const newProduct = new Products({
         name,
@@ -102,7 +102,6 @@ class ProductController {
         colors,
         sizes,
         dsc,
-        stars,
         sex,
         imgs,
         collections: newCollection._id,
@@ -112,7 +111,7 @@ class ProductController {
         if (err) return res.json({ success: false, msg: err.message });
         newProduct.save();
       });
-      return res.json({ success: true });
+      return res.json({ success: true, product: newProduct });
     } catch (error) {
       return res.status(500).json({ success: false, msg: error.message });
     }
@@ -120,7 +119,8 @@ class ProductController {
   //PATCH - PATCH product
   async update(req, res, next) {
     const { id } = req.params;
-    const { name, price, category, colors, sizes, dsc, stars } = req.body;
+    const { name, price, category, colors, sizes, dsc, sex, imgs } = req.body;
+    console.log(req.body);
     try {
       const response = await Products.updateOne(
         { _id: id },
@@ -132,12 +132,21 @@ class ProductController {
             colors,
             sizes,
             dsc,
-            stars,
+            imgs,
+            sex,
           },
         }
       );
-      if (response) {
-        res.json({ success: true, msg: "Update success!" });
+      if (response.modifiedCount > 0) {
+        res.json({
+          success: true,
+          msg: "Update success!",
+          id,
+          product: req.body,
+          response,
+        });
+      } else {
+        res.json({ success: false, msg: "Đã xảy ra lỗi" });
       }
     } catch (error) {
       console.log(error);
@@ -146,11 +155,11 @@ class ProductController {
   }
   //DELETE - delete product
   async delete(req, res, next) {
-    const { id } = req.body;
+    const { id } = req.params;
     try {
       const response = await Products.deleteOne({ _id: id });
       if (response.deletedCount > 0) {
-        res.json({ success: true, msg: "Delete success!" });
+        res.json({ success: true, msg: "Delete success!", id });
       }
     } catch (error) {
       console.log(error);

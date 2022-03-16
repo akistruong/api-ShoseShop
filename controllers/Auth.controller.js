@@ -104,6 +104,7 @@ class AuthController {
         });
       }
     } catch (error) {
+      console.log(error);
       res.status(500).json({ success: false, msg: "server error" });
     }
   }
@@ -111,6 +112,37 @@ class AuthController {
     // res.json({ data: req.profile });
   }
   async refreshToken(req, res, next) {}
+  async Auth(req, res, next) {
+    const Authorization = req.headers.authorization;
+    if (Authorization) {
+      console.log(Authorization);
+      const Token = Authorization.split(" ")[1];
+
+      try {
+        if (Token) {
+          const decode = await JWT.compareToken(
+            Token,
+            process.env.JWT_ACCESS_TOKEN_SECRET_KEY
+          );
+          if (decode) {
+            const email = decode.data.email;
+            const user = await Users.findOne({ email });
+            if (user) {
+              if (user.role == "1") {
+                res.json({ isAdmin: true, msg: "Xác thực thành công" });
+              } else {
+                res.json({ isUser: true, msg: "Xác thực thành công" });
+              }
+            }
+          }
+        }
+      } catch (error) {
+        res.json({ success: false, msg: "Token invalid" });
+      }
+    } else {
+      res.status(401).json({ success: false, msg: "Vui lòng đăng nhập" });
+    }
+  }
 }
 
 module.exports = new AuthController();
